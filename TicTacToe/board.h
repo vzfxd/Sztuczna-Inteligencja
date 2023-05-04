@@ -62,6 +62,21 @@ const int lose[48][3][2] = {
   { {1,4}, {2,3}, {3,2} }, { {2,3}, {3,2}, {4,1} }, { {2,4}, {3,3}, {4,2} }
 };
 
+const int d_pairs[10][2][2] = {
+  { {0,0},{1,1} },
+  { {1,1},{2,2} },
+  { {2,2},{3,3} },
+  { {3,3},{4,4} },
+
+  { {0,1},{1,2} },
+  { {1,2},{2,3} },
+  { {2,3},{3,4} },
+
+  { {1,0},{2,1} },
+  { {2,1},{3,2} },
+  { {3,2},{4,3} },
+};
+
 void setBoard()
 {
   for(int i=0; i<5; i++)
@@ -128,6 +143,83 @@ bool lCheck(int b[5][5],int player)
     if( (b[lose[i][0][0]][lose[i][0][1]]==player) && (b[lose[i][1][0]][lose[i][1][1]]==player) && (b[lose[i][2][0]][lose[i][2][1]]==player) )
       return true;
   return false;
+}
+
+int rows[25] = {0,0,0,0,0, 1,1,1,1,1, 2,2,2,2,2, 3,3,3,3,3, 4,4,4,4,4};
+int cols[25] = {0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4};
+
+int evalTestxd(int b[5][5]){
+
+  int opponent = 3-player;
+  int score = 0;
+
+  ///////////////////// WYGRANE ////////////////
+  for(int i=0; i<28; i++){
+
+    int player_count = 0;
+    int opponent_count = 0;
+    int blank_count = 0;
+
+    for(int j=0; j<4; j++){
+
+      if(b[win[i][j][0]][win[i][j][1]]==0){
+        blank_count++;
+      }else if(b[win[i][j][0]][win[i][j][1]]==opponent){
+        opponent_count++;
+      }else{
+        player_count++;
+      }
+
+    }
+
+    if(blank_count!=4){
+      if(opponent_count==0){
+        if(player_count==4) return 1000;
+        score+=2*player_count;
+      }
+      else if(player_count==0){
+        if(opponent_count==4) return -1000;
+        score-=2*opponent_count;
+      }
+    }
+
+  }
+  ////////////////////////////////////////////////////
+
+
+
+  ////////////////// PRZEGRANE //////////////////////
+  for(int i=0; i<48;i++){
+
+    int player_count = 0;
+    int opponent_count = 0;
+    int blank_count = 0;
+
+    for(int j=0; j<3; j++){
+
+      if(b[lose[i][j][0]][lose[i][j][1]]==0){
+        blank_count++;
+      }else if(b[lose[i][j][0]][lose[i][j][1]]==opponent){
+        opponent_count++;
+      }else{
+        player_count++;
+      }
+
+    }
+
+    if(blank_count!=3){
+      if(player_count==0){
+        if(opponent_count==3) return 1000;
+        score+=opponent_count;
+      }
+      else if(opponent_count==0){
+        if(player_count==3) return -1000;
+        score-=player_count;
+      }
+    }
+
+  }
+  return score;
 }
 
 int evaluation(int b[5][5]){
@@ -197,7 +289,7 @@ int evaluation(int b[5][5]){
 
 int minimax(int board[5][5], int depth, bool isMax,int player, int alpha, int beta)
 {
-    int score = evaluation(board);
+    int score = evalTestxd(board);
     if(depth==0 || score==1000 || score==-1000 ) return score;
   
     if (isMax){
@@ -265,75 +357,3 @@ int findBestMove(int board[5][5], int player, int depth)
     }
     return bestMove;
 }
-
-
-// int evalTest(int b[5][5]){
-
-//   int opponent = 3-player;
-//   int score = 0;
-
-//   // WYGRANE //
-//   for(int i=0; i<28; i++){
-
-//     int player_count = 0;
-//     int opponent_count = 0;
-//     int blank_count = 0;
-
-//     for(int j=0; j<4; j++){
-
-//       if(b[win[i][j][0]][win[i][j][1]]==0){
-//         blank_count++;
-//       }else if(b[win[i][j][0]][win[i][j][1]]==opponent){
-//         opponent_count++;
-//       }else{
-//         player_count++;
-//       }
-
-//     }
-    
-//     if(blank_count!=4){
-//       if(opponent_count==0){
-//         if(player_count==4) return 1000;
-//         score++;
-//       }
-//       else if(opponent_count==0){
-//         if(opponent_count==4) return -1000;
-//         score--;
-//       }
-//     }
-
-//   }
-
-//   // PRZEGRANE //
-//   for(int i=0; i<48;i++){
-
-//     int player_count = 0;
-//     int opponent_count = 0;
-//     int blank_count = 0;
-//     for(int j=0; j<3; j++){
-
-//       if(b[lose[i][j][0]][lose[i][j][1]]==0){
-//         blank_count++;
-//       }else if(b[lose[i][j][0]][lose[i][j][1]]==opponent){
-//         opponent_count++;
-//       }else{
-//         player_count++;
-//       }
-
-//     }
-
-//     if(blank_count!=3){
-//       if(player_count==0){
-//         if(opponent_count==3) return 1000;
-//         score++;
-//       }
-//       else if(opponent_count==0){
-//         if(player_count==3) return -1000;
-//         score--;
-//       }
-//     }
-
-//   }
-
-//   return score;
-// }
