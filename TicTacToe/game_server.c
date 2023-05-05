@@ -135,8 +135,8 @@ int main(int argc, char *argv[])
     printf("Client message: %s\n", client_message);
     move = atoi(client_message);
     correct = setMove(move, player);
-    if( correct ) isWin = winCheck(player);
-    if( correct && !isWin ) isLose = loseCheck(player);
+    if( correct ) isWin = wCheck(player,board);
+    if( correct && !isWin ) isLose = lCheck(player,board);
 
     if( !correct ) { msg =400; end_msg = 500; }
     else if( isWin ) { msg = 200+move; end_msg = 100; }

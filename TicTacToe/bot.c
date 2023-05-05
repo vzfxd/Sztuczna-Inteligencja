@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
   setBoard(); 
   end_game = false;
-  player = atoi(argv[3]);
+  _player = atoi(argv[3]);
   depth = atoi(argv[4]);
 
   while( !end_game ) {
@@ -79,16 +79,16 @@ int main(int argc, char *argv[])
     move = msg%100;
     msg = msg/100;
     if( move!=0 ) {
-      setMove(move, 3-player);
+      setMove(move, 3-_player);
       printBoard();
     }
     if( (msg==0) || (msg==6) ) {
       clock_t begin = clock();
-      move = findBestMove(board,player,depth);
+      move = findBestMove(board,depth);
       clock_t end = clock();
       double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
       printf("%f\n",time_spent);
-      setMove(move, player);
+      setMove(move, _player);
       printBoard();
       memset(client_message, '\0', sizeof(client_message));
       sprintf(client_message, "%d", move);
