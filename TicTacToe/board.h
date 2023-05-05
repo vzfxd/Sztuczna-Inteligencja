@@ -145,9 +145,6 @@ bool lCheck(int b[5][5],int player)
   return false;
 }
 
-int rows[25] = {0,0,0,0,0, 1,1,1,1,1, 2,2,2,2,2, 3,3,3,3,3, 4,4,4,4,4};
-int cols[25] = {0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4};
-
 int evalTestxd(int b[5][5]){
 
   int opponent = 3-player;
@@ -222,70 +219,12 @@ int evalTestxd(int b[5][5]){
   return score;
 }
 
-int evaluation(int b[5][5]){
-  int opponent = 3-player;
-  int score = 0;
-  for(int i=0; i<28; i++){
 
-    //Sprawdza wygrywające kombinacje, które nieskładają sie tylko z 0
-    if(b[win[i][0][0]][win[i][0][1]]!=0 || b[win[i][1][0]][win[i][1][1]]!=0 || b[win[i][2][0]][win[i][2][1]]!=0 || b[win[i][3][0]][win[i][3][1]]!=0){
 
-      //Nie ma żadnego symbolu opponenta, tzn że możliwa jest do ułożenia kombinacja wygrywająca dla playera
-      if(b[win[i][0][0]][win[i][0][1]]!=opponent && b[win[i][1][0]][win[i][1][1]]!=opponent && b[win[i][2][0]][win[i][2][1]]!=opponent && b[win[i][3][0]][win[i][3][1]]!=opponent){
-        
-        //Wygrana playera
-        if(b[win[i][0][0]][win[i][0][1]]==player && b[win[i][1][0]][win[i][1][1]]==player && b[win[i][2][0]][win[i][2][1]]==player && b[win[i][3][0]][win[i][3][1]]==player){
-          return 1000;
-        }
-        score++;
-      }
+int rows[25] = {0,0,0,0,0, 1,1,1,1,1, 2,2,2,2,2, 3,3,3,3,3, 4,4,4,4,4};
+int cols[25] = {0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4, 0,1,2,3,4};
 
-      //Nie ma żadnego symbolu playera, tzn że możliwa jest do ułożenia kombinacja wygrywająca dla opponenta
-      else if(b[win[i][0][0]][win[i][0][1]]!=player && b[win[i][1][0]][win[i][1][1]]!=player && b[win[i][2][0]][win[i][2][1]]!=player && b[win[i][3][0]][win[i][3][1]]!=player){
-        
-        //Wygrana opponenta
-        if(b[win[i][0][0]][win[i][0][1]]==opponent && b[win[i][1][0]][win[i][1][1]]==opponent && b[win[i][2][0]][win[i][2][1]]==opponent && b[win[i][3][0]][win[i][3][1]]==opponent){
-          return -1000;
-        }
-        score--;
-      }
-      
-    }
-
-  }
-
-  for(int i=0; i<48;i++){
-
-     //Sprawdza przegrywające kombinacje, które nieskładają sie tylko z 0
-    if(b[lose[i][0][0]][lose[i][0][1]]!=0 || b[lose[i][1][0]][lose[i][1][1]]!=0 || b[lose[i][2][0]][lose[i][2][1]]!=0){
-
-      //Nie ma żadnego symbolu playera, tzn że możliwa jest do ułożenia kombinacja przegrywająca dla opponenta
-      if(b[lose[i][0][0]][lose[i][0][1]]!=player && b[lose[i][1][0]][lose[i][1][1]]!=player && b[lose[i][2][0]][lose[i][2][1]]!=player){
-        
-        //Przegrana opponenta
-        if(b[lose[i][0][0]][lose[i][0][1]]==opponent && b[lose[i][1][0]][lose[i][1][1]]==opponent && b[lose[i][2][0]][lose[i][2][1]]==opponent){
-          return 1000;
-        }
-        score++;
-      }
-      
-      //Nie ma żadnego symbolu opponenta, tzn że możliwa jest do ułożenia kombinacja przegrywająca dla playera
-      else if(b[lose[i][0][0]][lose[i][0][1]]!=opponent && b[lose[i][1][0]][lose[i][1][1]]!=opponent && b[lose[i][2][0]][lose[i][2][1]]!=opponent){
-        
-        //Przegrana playera
-        if(b[lose[i][0][0]][lose[i][0][1]]==player && b[lose[i][1][0]][lose[i][1][1]]==player && b[lose[i][2][0]][lose[i][2][1]]==player){
-          return -1000;
-        }
-        score--;
-      }
-      
-    }
-
-  }
-
-  return score;
-
-}
+int order[25] = {0,1,2,3,4, 9,14,19,24, 23,22,21,20, 15,10,5, 6,7,8, 13,18, 17,16, 11, 12};
 
 int minimax(int board[5][5], int depth, bool isMax,int player, int alpha, int beta)
 {
@@ -293,45 +232,33 @@ int minimax(int board[5][5], int depth, bool isMax,int player, int alpha, int be
     if(depth==0 || score==1000 || score==-1000 ) return score;
   
     if (isMax){
-        int best = -1111;
-        bool stop = false;
-        for (int i = 0; i<5; i++){
-            for (int j = 0; j<5; j++){
-                if (board[i][j]==0){
-                    board[i][j] = player;
-                    best = MAX( best, minimax(board, depth-1, !isMax, 3-player,alpha,beta) );
-                    board[i][j] = 0;
-                    alpha = MAX(alpha,best);
-                    if(beta<=alpha){
-                      stop = true;
-                      break;
-                    }   
-                }
-            }
-            if(stop)break;
+      int best = -1111;
+      for (int j = 0; j<25; j++){
+        int i = order[24-j];
+        if(board[rows[i]][cols[i]]==0){
+          board[rows[i]][cols[i]] = player;
+          best = MAX( best, minimax(board, depth-1, !isMax, 3-player,alpha,beta) );
+          board[rows[i]][cols[i]] = 0;
+          alpha = MAX(alpha,best);
+          if(beta<=alpha)break;
         }
-        return best;
+      }
+      return best;
     }
   
     else{
-        int best = 1111;
-        bool stop = false;
-        for (int i = 0; i<5; i++){
-            for (int j = 0; j<5; j++){
-                if (board[i][j]==0){
-                    board[i][j] = player;
-                    best = MIN(best, minimax(board, depth-1, !isMax, 3-player,alpha,beta));
-                    board[i][j] = 0;
-                    beta = MIN(beta,best);
-                    if(beta<=alpha){
-                      stop = true;
-                      break;
-                    }
-                }
-            }
-            if(stop)break;
+      int best = 1111;
+      for (int j = 0; j<25; j++){
+        int i = order[24-j];
+        if (board[rows[i]][cols[i]]==0){
+          board[rows[i]][cols[i]] = player;
+          best = MIN(best, minimax(board, depth-1, !isMax, 3-player,alpha,beta));
+          board[rows[i]][cols[i]] = 0;
+          beta = MIN(beta,best);
+          if(beta<=alpha)break;
         }
-        return best;
+      }
+      return best;
     }
 }
 
@@ -357,3 +284,76 @@ int findBestMove(int board[5][5], int player, int depth)
     }
     return bestMove;
 }
+
+
+
+
+
+
+
+
+
+// int evaluation(int b[5][5]){
+//   int opponent = 3-player;
+//   int score = 0;
+//   for(int i=0; i<28; i++){
+
+//     //Sprawdza wygrywające kombinacje, które nieskładają sie tylko z 0
+//     if(b[win[i][0][0]][win[i][0][1]]!=0 || b[win[i][1][0]][win[i][1][1]]!=0 || b[win[i][2][0]][win[i][2][1]]!=0 || b[win[i][3][0]][win[i][3][1]]!=0){
+
+//       //Nie ma żadnego symbolu opponenta, tzn że możliwa jest do ułożenia kombinacja wygrywająca dla playera
+//       if(b[win[i][0][0]][win[i][0][1]]!=opponent && b[win[i][1][0]][win[i][1][1]]!=opponent && b[win[i][2][0]][win[i][2][1]]!=opponent && b[win[i][3][0]][win[i][3][1]]!=opponent){
+        
+//         //Wygrana playera
+//         if(b[win[i][0][0]][win[i][0][1]]==player && b[win[i][1][0]][win[i][1][1]]==player && b[win[i][2][0]][win[i][2][1]]==player && b[win[i][3][0]][win[i][3][1]]==player){
+//           return 1000;
+//         }
+//         score++;
+//       }
+
+//       //Nie ma żadnego symbolu playera, tzn że możliwa jest do ułożenia kombinacja wygrywająca dla opponenta
+//       else if(b[win[i][0][0]][win[i][0][1]]!=player && b[win[i][1][0]][win[i][1][1]]!=player && b[win[i][2][0]][win[i][2][1]]!=player && b[win[i][3][0]][win[i][3][1]]!=player){
+        
+//         //Wygrana opponenta
+//         if(b[win[i][0][0]][win[i][0][1]]==opponent && b[win[i][1][0]][win[i][1][1]]==opponent && b[win[i][2][0]][win[i][2][1]]==opponent && b[win[i][3][0]][win[i][3][1]]==opponent){
+//           return -1000;
+//         }
+//         score--;
+//       }
+      
+//     }
+
+//   }
+
+//   for(int i=0; i<48;i++){
+
+//      //Sprawdza przegrywające kombinacje, które nieskładają sie tylko z 0
+//     if(b[lose[i][0][0]][lose[i][0][1]]!=0 || b[lose[i][1][0]][lose[i][1][1]]!=0 || b[lose[i][2][0]][lose[i][2][1]]!=0){
+
+//       //Nie ma żadnego symbolu playera, tzn że możliwa jest do ułożenia kombinacja przegrywająca dla opponenta
+//       if(b[lose[i][0][0]][lose[i][0][1]]!=player && b[lose[i][1][0]][lose[i][1][1]]!=player && b[lose[i][2][0]][lose[i][2][1]]!=player){
+        
+//         //Przegrana opponenta
+//         if(b[lose[i][0][0]][lose[i][0][1]]==opponent && b[lose[i][1][0]][lose[i][1][1]]==opponent && b[lose[i][2][0]][lose[i][2][1]]==opponent){
+//           return 1000;
+//         }
+//         score++;
+//       }
+      
+//       //Nie ma żadnego symbolu opponenta, tzn że możliwa jest do ułożenia kombinacja przegrywająca dla playera
+//       else if(b[lose[i][0][0]][lose[i][0][1]]!=opponent && b[lose[i][1][0]][lose[i][1][1]]!=opponent && b[lose[i][2][0]][lose[i][2][1]]!=opponent){
+        
+//         //Przegrana playera
+//         if(b[lose[i][0][0]][lose[i][0][1]]==player && b[lose[i][1][0]][lose[i][1][1]]==player && b[lose[i][2][0]][lose[i][2][1]]==player){
+//           return -1000;
+//         }
+//         score--;
+//       }
+      
+//     }
+
+//   }
+
+//   return score;
+
+// }
